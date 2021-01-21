@@ -89,5 +89,5 @@ class TestRepo:
     def __del__(self):
         self._repo.git.clear_cache()
         self._repo.git = None
-        shutil.rmtree(self._temp_repo_dir.name)
+        # shutil.rmtree(self._temp_repo_dir.name)
 
