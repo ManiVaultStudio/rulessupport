@@ -1,4 +1,3 @@
-from pathlib import Path
 import json
 import unittest
 from rules_support.core_branch_info import CoreBranchInfo
@@ -27,7 +26,7 @@ class TestCoreBranchInfo(unittest.TestCase):
         expect_dict = {"_folder": test_obj.folder, "_version": "1.2.3"}
         print(f'Saved core: f{json_str}')
         test_dict = json.loads(json_str)
-        self.assertDictEqual(test_dict, self.expect_dict)
+        self.assertDictEqual(test_dict, expect_dict)
 
     def test_from_json(self):
         self.test_repo.checkout_branch('feature/XYZ_unittest_feature')

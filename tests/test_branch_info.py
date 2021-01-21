@@ -1,4 +1,3 @@
-from pathlib import Path
 import json
 import unittest
 from rules_support.branch_info import BranchInfo
@@ -16,7 +15,7 @@ class TestBranchInfo(unittest.TestCase):
 
     def setUp(self):
         self.master_branch = BranchInfo(self.test_repo.directory)
-        self.dict_form = {"_folder": self.master_branch._folder}
+        self.dict_form = {"_folder": self.master_branch.folder}
 
     def test_branch_name(self):
         self.assertEqual(self.master_branch.branch_name, 'master')
