@@ -26,4 +26,6 @@ jobs:
           git config --global user.email github-actions@github.com
       - name: Run unittests - TestMix
         run: |
-          python -m unittest discover tests/
+          python -m unittest tests/test_branch_info.py
+          python -m unittest tests/test_core_branch_info.py
+          python -m unittest tests/test_plugin_branch_info.py
