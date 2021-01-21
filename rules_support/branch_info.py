@@ -52,5 +52,9 @@ class BranchInfo:
         return self._folder
 
     @property
+    def rules_url(self):
+        return "https://github.com/hdps/core/wiki/Branch-naming-rules"
+
+    @property
     def version(self):
         raise NotImplementedError

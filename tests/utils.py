@@ -62,6 +62,18 @@ class TestRepo:
         self.append_to_readme(version + '_' + core_version)
         self._repo.git.commit('-a', message='Created plugin-release branch')
 
+    def create_plugin_feature_core_release_branch(self, version, core_version):
+        """Add a branch according to the hdps release naming convention.
+        The branch name will be of the form: 'release/core_<core_version>/<version>'
+
+        Args:
+            version (str): plugin version string
+            core_version (str): dependant core version string
+        """
+        self._repo.git.checkout('-b', f'feature/core_{core_version}/{version}')
+        self.append_to_readme('feature ' + version + '_' + core_version)
+        self._repo.git.commit('-a', message='Created plugin-feature/core-release branch')
+
     def checkout_branch(self, branch_name):
         """Perform a git checkout on the give branch
 

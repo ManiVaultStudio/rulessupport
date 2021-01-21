@@ -3,7 +3,9 @@ import re
 import requests
 from enum import Enum
 from requests.auth import HTTPBasicAuth
+from urllib3.exceptions import InsecureRequestWarning
 from .branch_info import BranchInfo
+import warnings
 
 class CoreDependencyType(str, Enum):
     """JSON Serializable enum noting type of core dependency
@@ -12,7 +14,7 @@ class CoreDependencyType(str, Enum):
     FEATURE = 'FEATURE'
     RELEASE = 'RELEASE'
     LATEST = 'LATEST'
-
+core_url_template = 'https://lkeb-artifactory.lumc.nl/artifactory/conan-local/lkeb/hdps-core/{}/stable/'
 class PluginBranchInfo(BranchInfo):
 
     stale_core_warning = """
@@ -28,11 +30,9 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
 
     def __init__(self, folder):
         super().__init__(folder)
-        self._version
         self._core_dep_type = CoreDependencyType.UNDEF
         self._core_version = None
         self._core_branch_name = None
-        self._rules_url = "https://github.com/hdps/core/wiki/Branch-naming-rules"
         self._init_branch_info()
 
     def _init_branch_info(self):
@@ -44,28 +44,52 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
             self._core_dep_type = CoreDependencyType.LATEST
             print(f"Master/main as: {self.version}")
         else:
-            # Core branch handling
-            # Feature branch handling
-            cap = re.search(r"^feature-|feature\/(.*)$", self.branch_name)
+            # Feature with release core dependency
+            cap = re.search(r"^feature-|feature\/core_(.*)\/(.*)$", self.branch_name)
             if cap is not None:
-                self._version = cap.group(1)
-                self._core_version = self._version
-                self._core_dep_type = CoreDependencyType.FEATURE
-                print(f"Derived feature branch version: {self.version}"
-                      f" type: {self._core_dep_type}")
+                self._version = cap.group(2)
+                self._core_version = cap.group(1)
+                self._core_dep_typ = CoreDependencyType.RELEASE
+                print(f"Feature branch version: {self.version} "
+                        f"Core version: {self.core_version} "
+                        f"type: {self._core_dep_type}")
             else:
-                # Release branch handling
-                cap = re.search(r"^release-|release\/core_(.*)\/(.*)$", self.branch_name)
+                # Core branch handling
+                # Feature branch handling
+                cap = re.search(r"^feature-|feature\/(.*)$", self.branch_name)
                 if cap is not None:
-                    self.version = cap.group(2)
-                    self._core_version = cap.group(1)
-                    self._core_dep_typ = CoreDependencyType.RELEASE
-                    print(f"Derived release branch version: {self.version}"
-                          f" type: {self._core_dep_type}")
+                    self._version = cap.group(1)
+                    # If a core feature does not exist fallback to latest
+                    if self._does_core_version_exist(self._version):
+                        self._core_version = self._version
+                        self._core_dep_type = CoreDependencyType.FEATURE
+                    else:
+                        self._core_version = 'latest'
+                        self._core_dep_type = CoreDependencyType.RELEASE
+                    # TBD - check that this version of core exists
+                    # in the 
+                    print(f"Feature branch version: {self.version} "
+                        f"Core version: {self.core_version} "
+                        f"type: {self._core_dep_type}")
                 else:
-                    raise RuntimeError(f"Branch {self.branch_name} does not meet the HDPS "
-                                         "naming conventions! "
-                                         f"See {self._rules_url}")
+                    # Release branch handling
+                    cap = re.search(r"^release-|release\/core_(.*)\/(.*)$", self.branch_name)
+                    if cap is not None:
+                        self._version = cap.group(2)
+                        self._core_version = cap.group(1)
+                        self._core_dep_typ = CoreDependencyType.RELEASE
+                        print(f"Release branch version: {self.version} "
+                              f"type: {self._core_dep_type}")
+                    else:
+                        raise RuntimeError(f"Branch {self.branch_name} does not meet the HDPS "
+                                            "naming conventions! "
+                                            f"See {self.rules_url}")
+
+    def _does_core_version_exist(self, version):
+        warnings.filterwarnings('ignore', category=InsecureRequestWarning)
+        resp = requests.get(core_url_template.format(version), verify=False)
+        warnings.filterwarnings('default')
+        return (resp.status_code == 200)
 
     def _get_git_access_credentials(self):
         has_git_access = False
