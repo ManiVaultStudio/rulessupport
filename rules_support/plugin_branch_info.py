@@ -1,8 +1,12 @@
+import copy
+import datetime
+import json
 import os
 import re
 import requests
+import time
 from enum import Enum
-# from requests.auth import HTTPBasicAuth
+from requests.auth import HTTPBasicAuth
 from urllib3.exceptions import InsecureRequestWarning
 from .branch_info import BranchInfo
 import warnings
@@ -30,13 +34,15 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
  `oooO'      o'    O.     O OOoOooO ooOooOoO        `OoooO'   `OoooO'   O      o ooOooOoO
     """
 
+    core_url_template =\
+        'https://lkeb-artifactory.lumc.nl/artifactory/conan-local/lkeb/hdps-core/{}/stable/'
+
     def __init__(self, folder):
         super().__init__(folder)
         self._core_dep_type = CoreDependencyType.UNDEF
         self._core_version = None
         self._core_branch_name = None
-        self._core_url_template =\
-            'https://lkeb-artifactory.lumc.nl/artifactory/conan-local/lkeb/hdps-core/{}/stable/'
+
         self._init_branch_info()
 
     def _init_branch_info(self):
@@ -52,7 +58,8 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
             if cap is not None:
                 self._version = cap.group(2)
                 self._core_version = cap.group(1)
-                self._core_dep_typ = CoreDependencyType.RELEASE
+                self._core_dep_type = CoreDependencyType.RELEASE
+                self._core_branch_name = f"release/{self._core_version}"
                 print(f"Feature branch version: {self.version} "
                       f"Core version: {self.core_version} "
                       f"type: {self._core_dep_type}")
@@ -66,9 +73,11 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
                     if self._does_core_version_exist(self._version):
                         self._core_version = self._version
                         self._core_dep_type = CoreDependencyType.FEATURE
+                        self._core_branch_name = f"feature/{self._core_version}"
                     else:
                         self._core_version = 'latest'
-                        self._core_dep_type = CoreDependencyType.RELEASE
+                        self._core_dep_type = CoreDependencyType.LATEST
+                        self._core_branch_name = "master"
                     print(f"Feature branch version: {self.version} "
                           f"Core version: {self.core_version} "
                           f"type: {self._core_dep_type}")
@@ -78,7 +87,8 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
                     if cap is not None:
                         self._version = cap.group(2)
                         self._core_version = cap.group(1)
-                        self._core_dep_typ = CoreDependencyType.RELEASE
+                        self._core_dep_type = CoreDependencyType.RELEASE
+                        self._core_branch_name = f"release/{self._core_version}"
                         print(f"Release branch version: {self.version} "
                               f"type: {self._core_dep_type}")
                     else:
@@ -86,9 +96,23 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
                                            "naming conventions! "
                                            f"See {self.rules_url}")
 
+    @classmethod
+    def from_json(cls, json_str):
+        attr_dict = json.loads(json_str)
+        if not isinstance(attr_dict, dict):
+            raise ValueError(f'{cls.__name__}: Error loading incompatible data')
+        temp = cls(attr_dict['_folder'])
+        return temp
+
+    def to_json(self):
+        # the git stuff is not serializable
+        temp_dict = copy.deepcopy(self.__dict__)
+        temp_dict.pop('_repo')
+        return json.dumps(temp_dict)
+
     def _does_core_version_exist(self, version):
         warnings.filterwarnings('ignore', category=InsecureRequestWarning)
-        resp = requests.get(self._core_url_template.format(version), verify=False)
+        resp = requests.get(self.core_url_template.format(version), verify=False)
         warnings.filterwarnings('default')
         return (resp.status_code == 200)
 
@@ -105,62 +129,62 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
                 has_git_access = True
         return (access_token, access_name, has_git_access)
 
-    def get_dependent_core_version(self):
-        """Return the version of the dependent core.
+    def _parse_core_commit_timestamp(self, branch_json):
+        date = datetime.datetime.strptime(
+            branch_json['commit']['commit']['author']['date'],
+            "%Y-%m-%dT%H:%M:%SZ")
+        return int(time.mktime(date.timetuple()))
 
-        Repositories with access to the hdps/core repo must have
-        both environemtn variables: LKEB_CORE_ACCESS_TOKEN and LKEB_CORE_ACCESS_NAME
-        present
+    def get_timestamp_for_core_commit(self):
+        """Returns an integer timestamp for the required core version
+
+        For this to work the job requires access to the hdps/core repo
+        using the environment variables: LKEB_CORE_ACCESS_TOKEN and
+        LKEB_CORE_ACCESS_NAME. If these are not present the return value is None.
 
         Raises:
             EnvironmentError: If LKEB_CORE_ACCESS_TOKEN is present without LKEB_CORE_ACCESS_NAME
-            EnvironmentError: If required core release version is not available
 
         Returns:
-            str: The core version.
+            int: The core commit timestamp in seconds
         """
 
         access_token, access_name, has_git_access = self._get_git_access_credentials()
 
-        if self._core_dep_typ == CoreDependencyType.LATEST:
-            self._core_version = 'latest'
-        # elif self._core_dep_typ == CoreDependencyType.FEATURE:
-        #     # check if the version branch exists in github or revert to latest
-        #     if not has_git_access:
-        #         print(f"Can't access core. Defaulting to hdps-core version: latest")
-        #         self._core_version = 'latest'
-        #     else:
-        #         url = "https://api.github.com/repos/hdps/core/branches/feature/{}"\
-        #             .format(hdpscore['version'])
-        #         response = requests.get(url,
-        #           auth=HTTPBasicAuth(access_name, access_token)).json()
-        #     if response.get('name', '') == f'feature/{hdpscore["version"]}':
-        #         core_reference = hdpscore['template'].format(hdpscore['version'])
-        #         self.requires(core_reference)
-        #         self._save_core_timestamp(response, hdpscore)
-        #         print(f"Core Feature version is {core_reference}")
-        #     else:
-        #         # No commit so there is no branch - default to latest
-        #         self.requires(hdpscore['template'].format('latest'))
-        #         print(f"No core version {hdpscore['version']}. Defaulting to hdps-core *latest*")
+        if has_git_access is False:
+            return None
 
-        # elif hdpscore['dependency_state'] == DependencyState.RELEASE:
-        #     url = "https://api.github.com/repos/hdps/core/branches/release/{}"\
-        #         .format(hdpscore['version'])
-        #     response = requests.get(url, auth=HTTPBasicAuth(access_name, access_token)).json()
-        #     if response.get('name', '') == f'release/{hdpscore["version"]}':
-        #         core_reference = hdpscore['template'].format(hdpscore['version'])
-        #         self.requires(core_reference)
-        #         self._save_core_timestamp(response, hdpscore)
-        #         print(f"Core Release version is {core_reference}")
-        #     else:
-        #         # No commit so there is no branch - in release case this is an error
-        #         raise ConanException(f"Core release branch release/{hdpscore['version']} "
-        #                              "does not exist but was specified in the plugin.")
-        # else:
-        #     raise NotImplementedError("Unknown requirement state "
-        #                               f"{hdpscore['dependency_state']}")
-        return self._core_version
+        url = None
+        if self._core_dep_typ == CoreDependencyType.LATEST:
+            url = "https://api.github.com/repos/hdps/core/branches/master"
+        elif self._core_dep_typ == CoreDependencyType.FEATURE:
+            url = "https://api.github.com/repos/hdps/core/branches/feature/{}"\
+                .format(self._core_version)
+        elif self._core_dep_typ == CoreDependencyType.RELEASE:
+            url = "https://api.github.com/repos/hdps/core/branches/release/{}"\
+                .format(self._core_version)
+        else:
+            raise NotImplementedError("Unknown core requirement state "
+                                      f"{self._core_dep_typ}")
+
+        response = requests.get(
+            url,
+            auth=HTTPBasicAuth(access_name, access_token)).json()
+
+        if response.get('name', None) is None:
+            raise RuntimeError("Failed to access hdps/core branch")
+        return self._parse_core_commit_timestamp(response)
+
+    def read_manifest_timestamp(self, path_to_manifest):
+        """Read the first line from a conanmanifest.txt file
+        and return it as an integer timestamp
+
+        Args:
+            path_to_manifest (str): full filepath for /x/y/z/conanmanifest.txt
+        """
+        with open(os.path.join(path_to_manifest), 'r') as manifile:
+            artifact_timestamp = int(manifile.readline())
+            return artifact_timestamp
 
     @property
     def version(self):

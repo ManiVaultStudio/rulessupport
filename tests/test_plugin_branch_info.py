@@ -1,3 +1,4 @@
+import json
 import unittest
 from rules_support.plugin_branch_info import PluginBranchInfo
 from tests.utils import TestRepo
@@ -17,12 +18,67 @@ class TestPluginBranchInfo(unittest.TestCase):
         core release/0.1 exists in the artifactory
         """
         cls.test_repo = TestRepo(prefix=cls.__name__)
-        cls.test_repo.create_core_release_branch('1.2.3')
         cls.test_repo.create_feature_branch('XYZ_unittest_feature')
         cls.test_repo.create_feature_branch('test_ci_cd')
         cls.test_repo.create_plugin_feature_core_release_branch(
             'ABC_unittest_feature', '0.1')
         cls.test_repo.create_plugin_release_branch('1.0', '0.1')
+
+    def test_to_json_no_core_feature(self):
+        self.test_repo.checkout_branch('feature/XYZ_unittest_feature')
+        test_obj = PluginBranchInfo(self.test_repo.directory)
+        json_str = test_obj.to_json()
+        expect_dict = {
+            "_folder": test_obj.folder,
+            "_version": "XYZ_unittest_feature",
+            "_core_dep_type": 'LATEST',
+            "_core_version": 'latest',
+            "_core_branch_name": 'master'}
+        print(f'Saved core: f{json_str}')
+        test_dict = json.loads(json_str)
+        self.assertDictEqual(test_dict, expect_dict)
+
+    def test_to_json_core_feature(self):
+        self.test_repo.checkout_branch('feature/test_ci_cd')
+        test_obj = PluginBranchInfo(self.test_repo.directory)
+        json_str = test_obj.to_json()
+        expect_dict = {
+            "_folder": test_obj.folder,
+            "_version": "test_ci_cd",
+            "_core_dep_type": 'FEATURE',
+            "_core_version": 'test_ci_cd',
+            "_core_branch_name": 'feature/test_ci_cd'}
+        print(f'Saved core: f{json_str}')
+        test_dict = json.loads(json_str)
+        self.assertDictEqual(test_dict, expect_dict)
+
+    def test_to_json_release_core_feature(self):
+        self.test_repo.checkout_branch('feature/core_0.1/ABC_unittest_feature')
+        test_obj = PluginBranchInfo(self.test_repo.directory)
+        json_str = test_obj.to_json()
+        expect_dict = {
+            "_folder": test_obj.folder,
+            "_version": "ABC_unittest_feature",
+            "_core_dep_type": 'RELEASE',
+            "_core_version": '0.1',
+            "_core_branch_name": 'release/0.1'}
+        print(f'Saved core: f{json_str}')
+        test_dict = json.loads(json_str)
+        self.assertDictEqual(test_dict, expect_dict)
+
+    def test_to_json_release_core_plugin(self):
+        self.test_repo.checkout_branch('release/core_0.1/1.0')
+        test_obj = PluginBranchInfo(self.test_repo.directory)
+        json_str = test_obj.to_json()
+        expect_dict = {
+            "_folder": test_obj.folder,
+            "_version": "1.0",
+            "_core_dep_type": 'RELEASE',
+            "_core_version": '0.1',
+            "_core_branch_name": 'release/0.1'}
+        print(f'Saved core: f{json_str}')
+        test_dict = json.loads(json_str)
+        self.assertDictEqual(test_dict, expect_dict)
 
     def test_master_branch(self):
         self.test_repo.checkout_branch('master')
