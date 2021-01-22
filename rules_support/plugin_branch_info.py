@@ -2,10 +2,11 @@ import os
 import re
 import requests
 from enum import Enum
-from requests.auth import HTTPBasicAuth
+# from requests.auth import HTTPBasicAuth
 from urllib3.exceptions import InsecureRequestWarning
 from .branch_info import BranchInfo
 import warnings
+
 
 class CoreDependencyType(str, Enum):
     """JSON Serializable enum noting type of core dependency
@@ -14,7 +15,8 @@ class CoreDependencyType(str, Enum):
     FEATURE = 'FEATURE'
     RELEASE = 'RELEASE'
     LATEST = 'LATEST'
-core_url_template = 'https://lkeb-artifactory.lumc.nl/artifactory/conan-local/lkeb/hdps-core/{}/stable/'
+
+
 class PluginBranchInfo(BranchInfo):
 
     stale_core_warning = """
@@ -33,10 +35,11 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
         self._core_dep_type = CoreDependencyType.UNDEF
         self._core_version = None
         self._core_branch_name = None
+        self._core_url_template =\
+            'https://lkeb-artifactory.lumc.nl/artifactory/conan-local/lkeb/hdps-core/{}/stable/'
         self._init_branch_info()
 
     def _init_branch_info(self):
-        result = None
         if self.branch_name == "master" or self.branch_name == "main":
             self._version = "latest"
             self._core_version = "latest"
@@ -51,8 +54,8 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
                 self._core_version = cap.group(1)
                 self._core_dep_typ = CoreDependencyType.RELEASE
                 print(f"Feature branch version: {self.version} "
-                        f"Core version: {self.core_version} "
-                        f"type: {self._core_dep_type}")
+                      f"Core version: {self.core_version} "
+                      f"type: {self._core_dep_type}")
             else:
                 # Core branch handling
                 # Feature branch handling
@@ -66,11 +69,9 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
                     else:
                         self._core_version = 'latest'
                         self._core_dep_type = CoreDependencyType.RELEASE
-                    # TBD - check that this version of core exists
-                    # in the 
                     print(f"Feature branch version: {self.version} "
-                        f"Core version: {self.core_version} "
-                        f"type: {self._core_dep_type}")
+                          f"Core version: {self.core_version} "
+                          f"type: {self._core_dep_type}")
                 else:
                     # Release branch handling
                     cap = re.search(r"^release-|release\/core_(.*)\/(.*)$", self.branch_name)
@@ -82,12 +83,12 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
                               f"type: {self._core_dep_type}")
                     else:
                         raise RuntimeError(f"Branch {self.branch_name} does not meet the HDPS "
-                                            "naming conventions! "
-                                            f"See {self.rules_url}")
+                                           "naming conventions! "
+                                           f"See {self.rules_url}")
 
     def _does_core_version_exist(self, version):
         warnings.filterwarnings('ignore', category=InsecureRequestWarning)
-        resp = requests.get(core_url_template.format(version), verify=False)
+        resp = requests.get(self._core_url_template.format(version), verify=False)
         warnings.filterwarnings('default')
         return (resp.status_code == 200)
 
@@ -121,7 +122,7 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
 
         access_token, access_name, has_git_access = self._get_git_access_credentials()
 
-        if self._core_dep_typ ==CoreDependencyType.LATEST:
+        if self._core_dep_typ == CoreDependencyType.LATEST:
             self._core_version = 'latest'
         # elif self._core_dep_typ == CoreDependencyType.FEATURE:
         #     # check if the version branch exists in github or revert to latest
@@ -131,7 +132,8 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
         #     else:
         #         url = "https://api.github.com/repos/hdps/core/branches/feature/{}"\
         #             .format(hdpscore['version'])
-        #         response = requests.get(url, auth=HTTPBasicAuth(access_name, access_token)).json()
+        #         response = requests.get(url,
+        #           auth=HTTPBasicAuth(access_name, access_token)).json()
         #     if response.get('name', '') == f'feature/{hdpscore["version"]}':
         #         core_reference = hdpscore['template'].format(hdpscore['version'])
         #         self.requires(core_reference)

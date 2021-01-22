@@ -3,6 +3,7 @@ import unittest
 from rules_support.core_branch_info import CoreBranchInfo
 from tests.utils import TestRepo
 
+
 class TestCoreBranchInfo(unittest.TestCase):
 
     @classmethod
@@ -30,19 +31,23 @@ class TestCoreBranchInfo(unittest.TestCase):
 
     def test_from_json(self):
         self.test_repo.checkout_branch('feature/XYZ_unittest_feature')
-        test_cbinfo = CoreBranchInfo.from_json(json.dumps({'_folder': self.test_repo.directory}))
+        test_cbinfo = CoreBranchInfo.from_json(
+            json.dumps({'_folder': self.test_repo.directory}))
         self.assertEqual('XYZ_unittest_feature', test_cbinfo.version)
         self.assertEqual(self.test_repo.directory, test_cbinfo.folder)
-        self.assertEqual('feature/XYZ_unittest_feature', test_cbinfo.branch_name)
+        self.assertEqual('feature/XYZ_unittest_feature',
+                         test_cbinfo.branch_name)
 
         self.test_repo.checkout_branch('release/1.2.3')
-        test_cbinfo = CoreBranchInfo.from_json(json.dumps({'_folder': self.test_repo.directory}))
+        test_cbinfo = CoreBranchInfo.from_json(
+            json.dumps({'_folder': self.test_repo.directory}))
         self.assertEqual('1.2.3', test_cbinfo.version)
         self.assertEqual(self.test_repo.directory, test_cbinfo.folder)
         self.assertEqual('release/1.2.3', test_cbinfo.branch_name)
 
         self.test_repo.checkout_branch('master')
-        test_cbinfo = CoreBranchInfo.from_json(json.dumps({'_folder': self.test_repo.directory}))
+        test_cbinfo = CoreBranchInfo.from_json(
+            json.dumps({'_folder': self.test_repo.directory}))
         self.assertEqual('latest', test_cbinfo.version)
         self.assertEqual(self.test_repo.directory, test_cbinfo.folder)
         self.assertEqual('master', test_cbinfo.branch_name)

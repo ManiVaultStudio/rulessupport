@@ -2,7 +2,7 @@ import copy
 import json
 import re
 from .branch_info import BranchInfo
-from git import Repo
+
 
 class CoreBranchInfo(BranchInfo):
 
@@ -33,16 +33,15 @@ class CoreBranchInfo(BranchInfo):
             # Core branch handling
             # Feature branch handling
             cap = re.search(r"^feature-|feature\/(.*)$", self.branch_name)
-            if not cap is None:
+            if cap is not None:
                 self._version = cap.group(1)
                 print(f"Derived feature branch version: {self.version}")
             else:
                 # Release branch handling
                 cap = re.search(r"^release-|release\/(.*)$", self.branch_name)
-                if not cap is None:
+                if cap is not None:
                     self._version = cap.group(1)
 
     @property
     def version(self):
         return self._version
-

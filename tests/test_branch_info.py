@@ -3,6 +3,7 @@ import unittest
 from rules_support.branch_info import BranchInfo
 from tests.utils import TestRepo
 
+
 class TestBranchInfo(unittest.TestCase):
 
     @classmethod
@@ -28,7 +29,9 @@ class TestBranchInfo(unittest.TestCase):
     def test_from_json(self):
         test_binfo = BranchInfo.from_json(json.dumps(self.dict_form))
         self.assertEqual(test_binfo.folder, self.master_branch.folder)
-        self.assertEqual(test_binfo.branch_name, self.master_branch.branch_name)
+        self.assertEqual(test_binfo.branch_name,
+                         self.master_branch.branch_name)
+
 
 if __name__ == '__main__':
     unittest.main()

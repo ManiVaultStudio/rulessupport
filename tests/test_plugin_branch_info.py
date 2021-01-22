@@ -2,6 +2,7 @@ import unittest
 from rules_support.plugin_branch_info import PluginBranchInfo
 from tests.utils import TestRepo
 
+
 class TestPluginBranchInfo(unittest.TestCase):
 
     @classmethod
@@ -19,7 +20,8 @@ class TestPluginBranchInfo(unittest.TestCase):
         cls.test_repo.create_core_release_branch('1.2.3')
         cls.test_repo.create_feature_branch('XYZ_unittest_feature')
         cls.test_repo.create_feature_branch('test_ci_cd')
-        cls.test_repo.create_plugin_feature_core_release_branch('ABC_unittest_feature', '0.1')
+        cls.test_repo.create_plugin_feature_core_release_branch(
+            'ABC_unittest_feature', '0.1')
         cls.test_repo.create_plugin_release_branch('1.0', '0.1')
 
     def test_master_branch(self):

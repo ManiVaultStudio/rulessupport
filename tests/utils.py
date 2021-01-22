@@ -1,7 +1,7 @@
 from git import Repo
 import pathlib
 import tempfile
-import shutil
+
 
 class TestRepo:
     """Create a test git repo with a dummy README.md file
@@ -10,8 +10,8 @@ class TestRepo:
     Args:
         prefix (str): A prefix used in the directory_name
     """
-    def __init__(self, prefix = None):
-        self._temp_repo_dir = tempfile.TemporaryDirectory(prefix = prefix + '_')
+    def __init__(self, prefix=None):
+        self._temp_repo_dir = tempfile.TemporaryDirectory(prefix=prefix + '_')
         self.readme_path = pathlib.Path(self._temp_repo_dir.name, 'README.md')
         self.readme_path.touch()
         self._repo = Repo.init(self._temp_repo_dir.name)
@@ -52,7 +52,8 @@ class TestRepo:
 
     def create_plugin_release_branch(self, version, core_version):
         """Add a branch according to the hdps release naming convention.
-        The branch name will be of the form: 'release/core_<core_version>/<version>'
+        The branch name will be of the form:
+            'release/core_<core_version>/<version>'
 
         Args:
             version (str): plugin version string
@@ -63,8 +64,10 @@ class TestRepo:
         self._repo.git.commit('-a', message='Created plugin-release branch')
 
     def create_plugin_feature_core_release_branch(self, version, core_version):
-        """Add a branch according to the hdps release naming convention.
-        The branch name will be of the form: 'release/core_<core_version>/<version>'
+        """Add a branch according to the hdps
+        release naming convention.
+        The branch name will be of the form:
+            'release/core_<core_version>/<version>'
 
         Args:
             version (str): plugin version string
@@ -72,7 +75,8 @@ class TestRepo:
         """
         self._repo.git.checkout('-b', f'feature/core_{core_version}/{version}')
         self.append_to_readme('feature ' + version + '_' + core_version)
-        self._repo.git.commit('-a', message='Created plugin-feature/core-release branch')
+        self._repo.git.commit(
+            '-a', message='Created plugin-feature/core-release branch')
 
     def checkout_branch(self, branch_name):
         """Perform a git checkout on the give branch
@@ -91,7 +95,7 @@ class TestRepo:
         Returns:
             Repo: The clone Repo
         """
-        clone_dir = tempfile.TemporaryDirectory(prefix = prefix)
+        clone_dir = tempfile.TemporaryDirectory(prefix=prefix)
         return self._repo.clone(clone_dir)
 
     @property
@@ -102,4 +106,3 @@ class TestRepo:
         self._repo.git.clear_cache()
         self._repo.git = None
         # shutil.rmtree(self._temp_repo_dir.name)
-

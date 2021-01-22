@@ -2,9 +2,10 @@ import copy
 import json
 from git import Repo
 
+
 class BranchInfo:
     """
-    Extract version and commit infor from hdps repo branches
+    Extract version and commit information from hdps repo branches
 
     Attributes:
         _folder (str): Full path to repo directory
@@ -16,7 +17,7 @@ class BranchInfo:
             folder (str): Full path to repo directory
         """
         self._folder = folder
-        self._repo = Repo(path = self._folder)
+        self._repo = Repo(path=self._folder)
 
     @classmethod
     def from_json(cls, json_str):
@@ -24,7 +25,7 @@ class BranchInfo:
         if not isinstance(attr_dict, dict):
             raise ValueError(f'{cls.__name__}: Error loading incompatible data')
         temp = cls(attr_dict['_folder'])
-        temp._repo = Repo(path = temp.folder)
+        temp._repo = Repo(path=temp.folder)
         return temp
 
     def to_json(self):
