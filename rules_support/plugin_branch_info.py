@@ -41,7 +41,6 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
         super().__init__(folder)
         self._core_dep_type = CoreDependencyType.UNDEF
         self._core_version = None
-        self._core_branch_name = None
 
         self._init_branch_info()
 
@@ -49,7 +48,6 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
         if self.branch_name == "master" or self.branch_name == "main":
             self._version = "latest"
             self._core_version = "latest"
-            self._core_branch_name = "master"  # TBD - will migrate to name main
             self._core_dep_type = CoreDependencyType.LATEST
             print(f"Master/main as: {self.version}")
         else:
@@ -59,7 +57,6 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
                 self._version = cap.group(2)
                 self._core_version = cap.group(1)
                 self._core_dep_type = CoreDependencyType.RELEASE
-                self._core_branch_name = f"release/{self._core_version}"
                 print(f"Feature branch version: {self.version} "
                       f"Core version: {self.core_version} "
                       f"type: {self._core_dep_type}")
@@ -73,11 +70,9 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
                     if self._does_core_version_exist(self._version):
                         self._core_version = self._version
                         self._core_dep_type = CoreDependencyType.FEATURE
-                        self._core_branch_name = f"feature/{self._core_version}"
                     else:
                         self._core_version = 'latest'
                         self._core_dep_type = CoreDependencyType.LATEST
-                        self._core_branch_name = "master"
                     print(f"Feature branch version: {self.version} "
                           f"Core version: {self.core_version} "
                           f"type: {self._core_dep_type}")
@@ -88,7 +83,6 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
                         self._version = cap.group(2)
                         self._core_version = cap.group(1)
                         self._core_dep_type = CoreDependencyType.RELEASE
-                        self._core_branch_name = f"release/{self._core_version}"
                         print(f"Release branch version: {self.version} "
                               f"type: {self._core_dep_type}")
                     else:
@@ -201,7 +195,14 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
 
     @property
     def core_branch_name(self):
-        return self._core_branch_name
+        if self._core_dep_type == CoreDependencyType.LATEST:
+            return 'master'
+        elif self._core_dep_type == CoreDependencyType.RELEASE:
+            return f'release/{self._core_version}'
+        elif self._core_dep_type == CoreDependencyType.FEATURE:
+            return f'feature/{self._core_version}'
+        else:
+            raise NotImplementedError(f'Core type {self._core_dep_type} is not handled for branch_name derivation')
 
     @property
     def core_version(self):
