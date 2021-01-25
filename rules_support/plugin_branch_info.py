@@ -149,12 +149,12 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
             return None
 
         url = None
-        if self._core_dep_typ == CoreDependencyType.LATEST:
+        if self._core_dep_type == CoreDependencyType.LATEST:
             url = "https://api.github.com/repos/hdps/core/branches/master"
-        elif self._core_dep_typ == CoreDependencyType.FEATURE:
+        elif self._core_dep_type == CoreDependencyType.FEATURE:
             url = "https://api.github.com/repos/hdps/core/branches/feature/{}"\
                 .format(self._core_version)
-        elif self._core_dep_typ == CoreDependencyType.RELEASE:
+        elif self._core_dep_type == CoreDependencyType.RELEASE:
             url = "https://api.github.com/repos/hdps/core/branches/release/{}"\
                 .format(self._core_version)
         else:

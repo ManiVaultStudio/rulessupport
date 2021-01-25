@@ -7,6 +7,10 @@ on:
     branches:
       - master
 
+env:
+  LKEB_CORE_ACCESS_TOKEN: ${{ secrets.LKEB_CORE_ACCESS_TOKEN }}
+  LKEB_CORE_ACCESS_NAME: ${{ secrets.LKEB_CORE_ACCESS_NAME }}
+
 jobs:
   unittest:
     runs-on: ubuntu-latest

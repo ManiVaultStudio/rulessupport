@@ -1,4 +1,5 @@
 import json
+import os
 import unittest
 from rules_support.plugin_branch_info import PluginBranchInfo
 from tests.utils import TestRepo
@@ -23,6 +24,12 @@ class TestPluginBranchInfo(unittest.TestCase):
         cls.test_repo.create_plugin_feature_core_release_branch(
             'ABC_unittest_feature', '0.1')
         cls.test_repo.create_plugin_release_branch('1.0', '0.1')
+        if os.environ.get('GITHUB_ACTION', None) is None:
+            # create a local .env file and define these secret variables there:
+            #  LOCAL_ACCESS_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxx
+            #  LOCAL_ACCESS_NAME=xxxxxxxxxxxxxxxx
+            os.environ['LKEB_CORE_ACCESS_TOKEN'] = os.environ['LOCAL_ACCESS_TOKEN']
+            os.environ['LKEB_CORE_ACCESS_NAME'] = os.environ['LOCAL_ACCESS_NAME']
 
     # ********************TESTING SERIALIZE********************
     def test_to_json_no_core_feature(self):
@@ -164,6 +171,30 @@ class TestPluginBranchInfo(unittest.TestCase):
         test_obj = PluginBranchInfo(self.test_repo.directory)
         self.assertEqual(test_obj.version, '1.0')
         self.assertEqual(test_obj.core_version, '0.1')
+
+   # ********************TESTING CORE TIMESTAMP********************
+    def test_master_branch_core_timestamp(self):
+        self.test_repo.checkout_branch('master')
+        test_obj = PluginBranchInfo(self.test_repo.directory)
+        #  Expect the timestamp to be between Sept 2020 and Jan 2027
+        print(f'test_cid_cd core timestamp {test_obj.get_timestamp_for_core_commit()}')
+        self.assertGreater(test_obj.get_timestamp_for_core_commit(), 1600000000)
+        self.assertLess(test_obj.get_timestamp_for_core_commit(), 1800000000)
+
+    def test_feature_branch_core_timestamp(self):
+        self.test_repo.checkout_branch('feature/test_ci_cd')
+        test_obj = PluginBranchInfo(self.test_repo.directory)
+        #  Expect the timestamp to be between Sept 2020 and Jan 2027
+        print(f'test_cid_cd core timestamp {test_obj.get_timestamp_for_core_commit()}')
+        self.assertGreater(test_obj.get_timestamp_for_core_commit(), 1600000000)
+        self.assertLess(test_obj.get_timestamp_for_core_commit(), 1800000000)
+
+    def test_feature_release_core_timestamp(self):
+        self.test_repo.checkout_branch('release/core_0.1/1.0')
+        test_obj = PluginBranchInfo(self.test_repo.directory)
+        print(f'release 0.1 core timestamp {test_obj.get_timestamp_for_core_commit()}')
+        # core release commit was at January 27, 2020 10:37:31
+        self.assertEqual(test_obj.get_timestamp_for_core_commit(), 1580121451)
 
     @classmethod
     def tearDownClass(cls):
