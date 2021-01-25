@@ -1,3 +1,4 @@
+import calendar
 import copy
 import datetime
 import json
@@ -124,10 +125,19 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
         return (access_token, access_name, has_git_access)
 
     def _parse_core_commit_timestamp(self, branch_json):
+        """From the commit time return the seconds in epoch time stamp
+        based on UTC
+
+        Args:
+            branch_json (str): The commit json
+
+        Returns:
+            int: seconds in Unix epoch
+        """
         date = datetime.datetime.strptime(
             branch_json['commit']['commit']['author']['date'],
             "%Y-%m-%dT%H:%M:%SZ")
-        return int(time.mktime(date.timetuple()))
+        return int(calendar.timegm(date.timetuple()))
 
     def get_timestamp_for_core_commit(self):
         """Returns an integer timestamp for the required core version

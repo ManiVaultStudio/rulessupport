@@ -194,7 +194,7 @@ class TestPluginBranchInfo(unittest.TestCase):
         test_obj = PluginBranchInfo(self.test_repo.directory)
         print(f'release 0.1 core timestamp {test_obj.get_timestamp_for_core_commit()}')
         # core release commit was at January 27, 2020 10:37:31
-        self.assertEqual(test_obj.get_timestamp_for_core_commit(), 1580121451)
+        self.assertEqual(test_obj.get_timestamp_for_core_commit(), 1580125051)
 
     @classmethod
     def tearDownClass(cls):
