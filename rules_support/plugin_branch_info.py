@@ -92,6 +92,18 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
                                            f"See {self.rules_url}")
 
     @classmethod
+    def read_manifest_timestamp(cls, path_to_manifest):
+        """Read the first line from a conanmanifest.txt file
+        and return it as an integer timestamp
+
+        Args:
+            path_to_manifest (str): full filepath for /x/y/z/conanmanifest.txt
+        """
+        with open(os.path.join(path_to_manifest), 'r') as manifile:
+            artifact_timestamp = int(manifile.readline())
+            return artifact_timestamp
+
+    @classmethod
     def from_json(cls, json_str):
         attr_dict = json.loads(json_str)
         if not isinstance(attr_dict, dict):
@@ -178,17 +190,6 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
         if response.get('name', None) is None:
             raise RuntimeError("Failed to access hdps/core branch")
         return self._parse_core_commit_timestamp(response)
-
-    def read_manifest_timestamp(self, path_to_manifest):
-        """Read the first line from a conanmanifest.txt file
-        and return it as an integer timestamp
-
-        Args:
-            path_to_manifest (str): full filepath for /x/y/z/conanmanifest.txt
-        """
-        with open(os.path.join(path_to_manifest), 'r') as manifile:
-            artifact_timestamp = int(manifile.readline())
-            return artifact_timestamp
 
     @property
     def version(self):

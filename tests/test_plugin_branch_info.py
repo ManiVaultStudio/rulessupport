@@ -1,5 +1,6 @@
 import json
 import os
+import pathlib
 import unittest
 from rules_support.plugin_branch_info import PluginBranchInfo
 from tests.utils import TestRepo
@@ -195,6 +196,10 @@ class TestPluginBranchInfo(unittest.TestCase):
         print(f'release 0.1 core timestamp {test_obj.get_timestamp_for_core_commit()}')
         # core release commit was at January 27, 2020 10:37:31
         self.assertEqual(test_obj.get_timestamp_for_core_commit(), 1580125051)
+
+    def test_core_manifest_timestamp(self):
+        manifest_path = pathlib.Path(pathlib.Path(__file__).parent.absolute(), 'data/conanmanifest.txt')
+        self.assertEqual(PluginBranchInfo.read_manifest_timestamp(manifest_path), 1611246753)
 
     @classmethod
     def tearDownClass(cls):
