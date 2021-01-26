@@ -1,6 +1,6 @@
 import json
 import unittest
-from rules_support.core_branch_info import CoreBranchInfo
+from src.rules_support.core_branch_info import CoreBranchInfo
 from tests.utils import TestRepo
 
 

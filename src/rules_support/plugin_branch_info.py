@@ -5,7 +5,6 @@ import json
 import os
 import re
 import requests
-import time
 from enum import Enum
 from requests.auth import HTTPBasicAuth
 from urllib3.exceptions import InsecureRequestWarning
@@ -213,7 +212,8 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
         elif self._core_dep_type == CoreDependencyType.FEATURE:
             return f'feature/{self._core_version}'
         else:
-            raise NotImplementedError(f'Core type {self._core_dep_type} is not handled for branch_name derivation')
+            raise NotImplementedError(f'Core type {self._core_dep_type} ',
+                                      'is not handled for branch_name derivation')
 
     @property
     def core_version(self):

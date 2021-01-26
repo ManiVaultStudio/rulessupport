@@ -2,7 +2,7 @@ import json
 import os
 import pathlib
 import unittest
-from rules_support.plugin_branch_info import PluginBranchInfo
+from src.rules_support.plugin_branch_info import PluginBranchInfo
 from tests.utils import TestRepo
 
 
@@ -90,10 +90,10 @@ class TestPluginBranchInfo(unittest.TestCase):
         self.test_repo.checkout_branch('feature/XYZ_unittest_feature')
         test_pbinfo = PluginBranchInfo.from_json(
             json.dumps({
-            "_folder": self.test_repo.directory,
-            "_version": "XYZ_unittest_feature",
-            "_core_dep_type": 'LATEST',
-            "_core_version": 'latest'}))
+                "_folder": self.test_repo.directory,
+                "_version": "XYZ_unittest_feature",
+                "_core_dep_type": 'LATEST',
+                "_core_version": 'latest'}))
         self.assertEqual('master', test_pbinfo.core_branch_name)
         self.assertEqual('XYZ_unittest_feature', test_pbinfo.version)
         self.assertEqual(self.test_repo.directory, test_pbinfo.folder)
@@ -104,10 +104,10 @@ class TestPluginBranchInfo(unittest.TestCase):
         self.test_repo.checkout_branch('feature/test_ci_cd')
         test_pbinfo = PluginBranchInfo.from_json(
             json.dumps({
-            "_folder": self.test_repo.directory,
-            "_version": "test_ci_cd",
-            "_core_dep_type": 'FEATURE',
-            "_core_version": 'test_ci_cd'}))
+                "_folder": self.test_repo.directory,
+                "_version": "test_ci_cd",
+                "_core_dep_type": 'FEATURE',
+                "_core_version": 'test_ci_cd'}))
         self.assertEqual('feature/test_ci_cd', test_pbinfo.core_branch_name)
         self.assertEqual('test_ci_cd', test_pbinfo.version)
         self.assertEqual(self.test_repo.directory, test_pbinfo.folder)
@@ -118,10 +118,10 @@ class TestPluginBranchInfo(unittest.TestCase):
         self.test_repo.checkout_branch('feature/core_0.1/ABC_unittest_feature')
         test_pbinfo = PluginBranchInfo.from_json(
             json.dumps({
-            "_folder": self.test_repo.directory,
-            "_version": "ABC_unittest_feature",
-            "_core_dep_type": 'RELEASE',
-            "_core_version": '0.1'}))
+                "_folder": self.test_repo.directory,
+                "_version": "ABC_unittest_feature",
+                "_core_dep_type": 'RELEASE',
+                "_core_version": '0.1'}))
         self.assertEqual('release/0.1', test_pbinfo.core_branch_name)
         self.assertEqual('ABC_unittest_feature', test_pbinfo.version)
         self.assertEqual(self.test_repo.directory, test_pbinfo.folder)
@@ -132,10 +132,10 @@ class TestPluginBranchInfo(unittest.TestCase):
         self.test_repo.checkout_branch('release/core_0.1/1.0')
         test_pbinfo = PluginBranchInfo.from_json(
             json.dumps({
-            "_folder": self.test_repo.directory,
-            "_version": "1.0",
-            "_core_dep_type": 'RELEASE',
-            "_core_version": '0.1'}))
+                "_folder": self.test_repo.directory,
+                "_version": "1.0",
+                "_core_dep_type": 'RELEASE',
+                "_core_version": '0.1'}))
         self.assertEqual('release/0.1', test_pbinfo.core_branch_name)
         self.assertEqual('1.0', test_pbinfo.version)
         self.assertEqual(self.test_repo.directory, test_pbinfo.folder)
@@ -173,7 +173,7 @@ class TestPluginBranchInfo(unittest.TestCase):
         self.assertEqual(test_obj.version, '1.0')
         self.assertEqual(test_obj.core_version, '0.1')
 
-   # ********************TESTING CORE TIMESTAMP********************
+    # ********************TESTING CORE TIMESTAMP********************
     def test_master_branch_core_timestamp(self):
         self.test_repo.checkout_branch('master')
         test_obj = PluginBranchInfo(self.test_repo.directory)
@@ -198,7 +198,8 @@ class TestPluginBranchInfo(unittest.TestCase):
         self.assertEqual(test_obj.get_timestamp_for_core_commit(), 1580125051)
 
     def test_core_manifest_timestamp(self):
-        manifest_path = pathlib.Path(pathlib.Path(__file__).parent.absolute(), 'data/conanmanifest.txt')
+        manifest_path = pathlib.Path(pathlib.Path(__file__).parent.absolute(),
+                                     'data/conanmanifest.txt')
         self.assertEqual(PluginBranchInfo.read_manifest_timestamp(manifest_path), 1611246753)
 
     @classmethod
