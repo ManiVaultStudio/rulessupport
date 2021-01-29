@@ -176,7 +176,7 @@ class TestPluginBranchInfo(unittest.TestCase):
         test_obj = PluginBranchInfo(self.test_repo.directory)
         self.assertEqual(test_obj.version, '1.0')
         self.assertEqual(test_obj.core_version, '0.1')
-        self.assertEqual(test_obj.core_requirement, 'hdps-core/1.0@lkeb/stable')
+        self.assertEqual(test_obj.core_requirement, 'hdps-core/0.1@lkeb/stable')
 
     # ********************TESTING CORE TIMESTAMP********************
     def test_master_branch_core_timestamp(self):
