@@ -37,6 +37,8 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
     core_url_template =\
         'https://lkeb-artifactory.lumc.nl/artifactory/conan-local/lkeb/hdps-core/{}/stable/'
 
+    core_require_template = 'hdps-core/{}@lkeb/stable'
+
     def __init__(self, folder):
         super().__init__(folder)
         self._core_dep_type = CoreDependencyType.UNDEF
@@ -218,3 +220,7 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
     @property
     def core_version(self):
         return self._core_version
+
+    @property
+    def core_requirement(self):
+        return self.core_require_template.format(self.core_version)

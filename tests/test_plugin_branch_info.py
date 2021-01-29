@@ -148,30 +148,35 @@ class TestPluginBranchInfo(unittest.TestCase):
         test_obj = PluginBranchInfo(self.test_repo.directory)
         self.assertEqual(test_obj.version, 'latest')
         self.assertEqual(test_obj.core_version, 'latest')
+        self.assertEqual(test_obj.core_requirement, 'hdps-core/latest@lkeb/stable')
 
     def test_feature_branch_core_latest(self):
         self.test_repo.checkout_branch('feature/XYZ_unittest_feature')
         test_obj = PluginBranchInfo(self.test_repo.directory)
         self.assertEqual(test_obj.version, 'XYZ_unittest_feature')
         self.assertEqual(test_obj.core_version, 'latest')
+        self.assertEqual(test_obj.core_requirement, 'hdps-core/latest@lkeb/stable')
 
     def test_feature_branch_core_feature(self):
         self.test_repo.checkout_branch('feature/test_ci_cd')
         test_obj = PluginBranchInfo(self.test_repo.directory)
         self.assertEqual(test_obj.version, 'test_ci_cd')
         self.assertEqual(test_obj.core_version, 'test_ci_cd')
+        self.assertEqual(test_obj.core_requirement, 'hdps-core/test_ci_cd@lkeb/stable')
 
     def test_feature_core_release(self):
         self.test_repo.checkout_branch('feature/core_0.1/ABC_unittest_feature')
         test_obj = PluginBranchInfo(self.test_repo.directory)
         self.assertEqual(test_obj.version, 'ABC_unittest_feature')
         self.assertEqual(test_obj.core_version, '0.1')
+        self.assertEqual(test_obj.core_requirement, 'hdps-core/0.1@lkeb/stable')
 
     def test_release_branch(self):
         self.test_repo.checkout_branch('release/core_0.1/1.0')
         test_obj = PluginBranchInfo(self.test_repo.directory)
         self.assertEqual(test_obj.version, '1.0')
         self.assertEqual(test_obj.core_version, '0.1')
+        self.assertEqual(test_obj.core_requirement, 'hdps-core/1.0@lkeb/stable')
 
     # ********************TESTING CORE TIMESTAMP********************
     def test_master_branch_core_timestamp(self):
