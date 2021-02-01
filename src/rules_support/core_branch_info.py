@@ -35,7 +35,7 @@ class CoreBranchInfo(BranchInfo):
             cap = re.search(r"^feature-|feature\/(.*)$", self.branch_name)
             if cap is not None:
                 self._version = cap.group(1)
-                print(f"Derived feature branch version: {self.version}")
+                # print(f"Derived feature branch version: {self.version}")
             else:
                 # Release branch handling
                 cap = re.search(r"^release-|release\/(.*)$", self.branch_name)

@@ -51,7 +51,7 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
             self._version = "latest"
             self._core_version = "latest"
             self._core_dep_type = CoreDependencyType.LATEST
-            print(f"Master/main as: {self.version}")
+            # print(f"Master/main as: {self.version}")
         else:
             # Feature with release core dependency
             cap = re.search(r"^feature-|feature\/core_(.*)\/(.*)$", self.branch_name)
@@ -59,9 +59,9 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
                 self._version = cap.group(2)
                 self._core_version = cap.group(1)
                 self._core_dep_type = CoreDependencyType.RELEASE
-                print(f"Feature branch version: {self.version} "
-                      f"Core version: {self.core_version} "
-                      f"type: {self._core_dep_type}")
+                # print(f"Feature branch version: {self.version} "
+                #      f"Core version: {self.core_version} "
+                #      f"type: {self._core_dep_type}")
             else:
                 # Core branch handling
                 # Feature branch handling
@@ -75,9 +75,9 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
                     else:
                         self._core_version = 'latest'
                         self._core_dep_type = CoreDependencyType.LATEST
-                    print(f"Feature branch version: {self.version} "
-                          f"Core version: {self.core_version} "
-                          f"type: {self._core_dep_type}")
+                    # print(f"Feature branch version: {self.version} "
+                    #      f"Core version: {self.core_version} "
+                    #      f"type: {self._core_dep_type}")
                 else:
                     # Release branch handling
                     cap = re.search(r"^release-|release\/core_(.*)\/(.*)$", self.branch_name)
@@ -85,8 +85,8 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
                         self._version = cap.group(2)
                         self._core_version = cap.group(1)
                         self._core_dep_type = CoreDependencyType.RELEASE
-                        print(f"Release branch version: {self.version} "
-                              f"type: {self._core_dep_type}")
+                        # print(f"Release branch version: {self.version} "
+                        #      f"type: {self._core_dep_type}")
                     else:
                         raise RuntimeError(f"Branch {self.branch_name} does not meet the HDPS "
                                            "naming conventions! "
