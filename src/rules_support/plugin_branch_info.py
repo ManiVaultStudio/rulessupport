@@ -120,7 +120,7 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
 
     def _does_core_version_exist(self, version):
         warnings.filterwarnings('ignore', category=InsecureRequestWarning)
-        resp = requests.get(self.core_url_template.format(version), verify=False)
+        resp = requests.get(self.core_url_template.format(version), verify=False, auth=("hdpsreader", "4ead0nlyAccess"))
         warnings.filterwarnings('default')
         return (resp.status_code == 200)
 
