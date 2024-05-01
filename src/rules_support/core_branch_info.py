@@ -45,3 +45,12 @@ class CoreBranchInfo(BranchInfo):
     @property
     def version(self):
         return self._version
+
+    @property
+    def release_status(self):
+        """True indicates a release build based on a 
+        branch name starting with release- or release/
+        """
+        cap = re.search(r"^release-|release\/(.*)$", self.branch_name)
+        return cap is not None
+        
