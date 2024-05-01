@@ -101,17 +101,17 @@ class TestPluginBranchInfo(unittest.TestCase):
                          test_pbinfo.branch_name)
 
     def test_from_json_core_feature(self):
-        self.test_repo.checkout_branch('feature/test_ci_cd')
+        self.test_repo.checkout_branch('feature/qt6')
         test_pbinfo = PluginBranchInfo.from_json(
             json.dumps({
                 "_folder": self.test_repo.directory,
-                "_version": "test_ci_cd",
+                "_version": "qt6",
                 "_core_dep_type": 'FEATURE',
-                "_core_version": 'test_ci_cd'}))
-        self.assertEqual('feature/test_ci_cd', test_pbinfo.core_branch_name)
-        self.assertEqual('test_ci_cd', test_pbinfo.version)
+                "_core_version": 'qt6'}))
+        self.assertEqual('feature/qt6', test_pbinfo.core_branch_name)
+        self.assertEqual('qt6', test_pbinfo.version)
         self.assertEqual(self.test_repo.directory, test_pbinfo.folder)
-        self.assertEqual('feature/test_ci_cd',
+        self.assertEqual('feature/qt6',
                          test_pbinfo.branch_name)
 
     def test_from_json_release_core_feature(self):
@@ -158,11 +158,11 @@ class TestPluginBranchInfo(unittest.TestCase):
         self.assertEqual(test_obj.core_requirement, 'hdps-core/latest@lkeb/stable')
 
     def test_feature_branch_core_feature(self):
-        self.test_repo.checkout_branch('feature/test_ci_cd')
+        self.test_repo.checkout_branch('feature/qt6')
         test_obj = PluginBranchInfo(self.test_repo.directory)
-        self.assertEqual(test_obj.version, 'test_ci_cd')
-        self.assertEqual(test_obj.core_version, 'test_ci_cd')
-        self.assertEqual(test_obj.core_requirement, 'hdps-core/test_ci_cd@lkeb/stable')
+        self.assertEqual(test_obj.version, 'qt6')
+        self.assertEqual(test_obj.core_version, 'qt6')
+        self.assertEqual(test_obj.core_requirement, 'hdps-core/qt6@lkeb/stable')
 
     def test_feature_core_release(self):
         self.test_repo.checkout_branch('feature/core_0.1/ABC_unittest_feature')
@@ -188,7 +188,7 @@ class TestPluginBranchInfo(unittest.TestCase):
         self.assertLess(test_obj.get_timestamp_for_core_commit(), 1800000000)
 
     def test_feature_branch_core_timestamp(self):
-        self.test_repo.checkout_branch('feature/test_ci_cd')
+        self.test_repo.checkout_branch('feature/qt6')
         test_obj = PluginBranchInfo(self.test_repo.directory)
         #  Expect the timestamp to be between Sept 2020 and Jan 2027
         print(f'test_cid_cd core timestamp {test_obj.get_timestamp_for_core_commit()}')
