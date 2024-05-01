@@ -50,11 +50,12 @@ class TestPluginBranchInfo(unittest.TestCase):
         self.test_repo.checkout_branch('feature/qt6')
         test_obj = PluginBranchInfo(self.test_repo.directory)
         json_str = test_obj.to_json()
+        # No matching core type returns latest
         expect_dict = {
             "_folder": test_obj.folder,
             "_version": "qt6",
-            "_core_dep_type": 'FEATURE',
-            "_core_version": 'qt6'}
+            "_core_dep_type": 'LATEST',
+            "_core_version": 'latest'}
         print(f'Saved core: f{json_str}')
         test_dict = json.loads(json_str)
         self.assertDictEqual(test_dict, expect_dict)
