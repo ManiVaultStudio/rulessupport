@@ -162,7 +162,7 @@ class TestPluginBranchInfo(unittest.TestCase):
         test_obj = PluginBranchInfo(self.test_repo.directory)
         self.assertEqual(test_obj.version, 'qt6')
         self.assertEqual(test_obj.core_version, 'latest') # no matching core available
-        self.assertEqual(test_obj.core_requirement, 'hdps-core/qt6@lkeb/stable')
+        self.assertEqual(test_obj.core_requirement, 'hdps-core/latest@lkeb/stable') # no matching core available
 
     def test_feature_core_release(self):
         self.test_repo.checkout_branch('feature/core_0.1/ABC_unittest_feature')

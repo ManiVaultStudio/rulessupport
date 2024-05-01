@@ -16,6 +16,7 @@ class TestCoreBranchInfo(unittest.TestCase):
         self.test_repo.checkout_branch('release/1.2.3')
         test_obj = CoreBranchInfo(self.test_repo.directory)
         self.assertEqual(test_obj.version, '1.2.3')
+        self.assertTrue(test_obj.release_status)
         self.test_repo.checkout_branch('feature/XYZ_unittest_feature')
         test_obj = CoreBranchInfo(self.test_repo.directory)
         self.assertEqual(test_obj.version, 'XYZ_unittest_feature')
@@ -23,6 +24,7 @@ class TestCoreBranchInfo(unittest.TestCase):
     def test_to_json(self):
         self.test_repo.checkout_branch('release/1.2.3')
         test_obj = CoreBranchInfo(self.test_repo.directory)
+        self.assertTrue(test_obj.release_status)
         json_str = test_obj.to_json()
         expect_dict = {"_folder": test_obj.folder, "_version": "1.2.3"}
         print(f'Saved core: f{json_str}')
@@ -33,6 +35,7 @@ class TestCoreBranchInfo(unittest.TestCase):
         self.test_repo.checkout_branch('feature/XYZ_unittest_feature')
         test_cbinfo = CoreBranchInfo.from_json(
             json.dumps({'_folder': self.test_repo.directory}))
+        self.assertFalse(test_cbinfo.release_status)
         self.assertEqual('XYZ_unittest_feature', test_cbinfo.version)
         self.assertEqual(self.test_repo.directory, test_cbinfo.folder)
         self.assertEqual('feature/XYZ_unittest_feature',
