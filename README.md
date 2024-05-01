@@ -11,7 +11,7 @@ In addition one or tw checks are performed:
 
 ### Manual installing
 
-To manualy install this python package (e.g. for local conan testing)
+To manually install this python package (e.g. for local conan testing)
 
 ```
 pip install -v git+http://github.com/hdps/rulessupport.git@master
