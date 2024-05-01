@@ -13,7 +13,7 @@ class TestPluginBranchInfo(unittest.TestCase):
         """Create a test repo for the plugin with the following example branches
             1) master (or main)
             2) feature/XYZ_unittest_feature (core does not exist)
-            3) feature/test_ci_cd (core does exist)
+            3) feature/qt6 (core does exist)
             3) feature/core_0.1/ABC_unittest_feature
             3) release/core_0.1/1.0
 
@@ -21,7 +21,7 @@ class TestPluginBranchInfo(unittest.TestCase):
         """
         cls.test_repo = TestRepo(prefix=cls.__name__)
         cls.test_repo.create_feature_branch('XYZ_unittest_feature')
-        cls.test_repo.create_feature_branch('test_ci_cd')
+        cls.test_repo.create_feature_branch('qt6')
         cls.test_repo.create_plugin_feature_core_release_branch(
             'ABC_unittest_feature', '0.1')
         cls.test_repo.create_plugin_release_branch('1.0', '0.1')
@@ -47,14 +47,14 @@ class TestPluginBranchInfo(unittest.TestCase):
         self.assertDictEqual(test_dict, expect_dict)
 
     def test_to_json_core_feature(self):
-        self.test_repo.checkout_branch('feature/test_ci_cd')
+        self.test_repo.checkout_branch('feature/qt6')
         test_obj = PluginBranchInfo(self.test_repo.directory)
         json_str = test_obj.to_json()
         expect_dict = {
             "_folder": test_obj.folder,
-            "_version": "test_ci_cd",
+            "_version": "qt6",
             "_core_dep_type": 'FEATURE',
-            "_core_version": 'test_ci_cd'}
+            "_core_version": 'qt6'}
         print(f'Saved core: f{json_str}')
         test_dict = json.loads(json_str)
         self.assertDictEqual(test_dict, expect_dict)
