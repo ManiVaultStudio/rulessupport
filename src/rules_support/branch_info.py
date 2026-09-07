@@ -5,7 +5,7 @@ from git import Repo
 
 class BranchInfo:
     """
-    Extract version and commit information from hdps repo branches
+    Extract version and commit information from ManiVault repo branches
 
     Attributes:
         _folder (str): Full path to repo directory
@@ -54,7 +54,7 @@ class BranchInfo:
 
     @property
     def rules_url(self):
-        return "https://github.com/hdps/core/wiki/Branch-naming-rules"
+        return "https://github.com/ManiVaultStudio/core/wiki/Branch-naming-rules"
 
     @property
     def version(self):
