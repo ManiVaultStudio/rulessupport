@@ -1,6 +1,6 @@
-## Rules support for HDPS naming conventions
+## Rules support for ManiVault naming conventions
 
-HDPS naming rules are documented in the [core-wiki](https://github.com/hdps/core/wiki/Branch-naming-rules).
+ManiVault naming rules are documented in the [core-wiki](https://github.com/ManiVaultStudio/core/wiki/Branch-naming-rules).
 
 The build system needs to be able to extract the version, and any core dependency version from the currently checked-out branch.
 
@@ -14,8 +14,8 @@ In addition one or tw checks are performed:
 To manually install this python package (e.g. for local conan testing)
 
 ```
-pip install -v git+http://github.com/hdps/rulessupport.git@master
+pip install -v git+http://github.com/ManiVaultStudio/rulessupport.git@master
 ```
 
 
-__Note:__ The latter check (the 'stale' core check) can only be performed if the build has access to the hdps Organizational access credentials. This is only available to private projects.
+__Note:__ The latter check (the 'stale' core check) can only be performed if the build has access to the ManiVault Organizational access credentials. This is only available to private projects.

@@ -88,7 +88,7 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
                         # print(f"Release branch version: {self.version} "
                         #      f"type: {self._core_dep_type}")
                     else:
-                        raise RuntimeError(f"Branch {self.branch_name} does not meet the HDPS "
+                        raise RuntimeError(f"Branch {self.branch_name} does not meet the ManiVaultStudio "
                                            "naming conventions! "
                                            f"See {self.rules_url}")
 
@@ -155,7 +155,7 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
     def get_timestamp_for_core_commit(self):
         """Returns an integer timestamp for the required core version
 
-        For this to work the job requires access to the hdps/core repo
+        For this to work the job requires access to the ManiVaultStudio/core repo
         using the environment variables: LKEB_CORE_ACCESS_TOKEN and
         LKEB_CORE_ACCESS_NAME. If these are not present the return value is None.
 
@@ -173,12 +173,12 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
 
         url = None
         if self._core_dep_type == CoreDependencyType.LATEST:
-            url = "https://api.github.com/repos/hdps/core/branches/master"
+            url = "https://api.github.com/repos/ManiVaultStudio/core/branches/master"
         elif self._core_dep_type == CoreDependencyType.FEATURE:
-            url = "https://api.github.com/repos/hdps/core/branches/feature/{}"\
+            url = "https://api.github.com/repos/ManiVaultStudio/core/branches/feature/{}"\
                 .format(self._core_version)
         elif self._core_dep_type == CoreDependencyType.RELEASE:
-            url = "https://api.github.com/repos/hdps/core/branches/release/{}"\
+            url = "https://api.github.com/repos/ManiVaultStudio/core/branches/release/{}"\
                 .format(self._core_version)
         else:
             raise NotImplementedError("Unknown core requirement state "
@@ -189,7 +189,7 @@ O.    .O     O     o      O o     .  O             `o     .o `o     O'  O     O 
             auth=HTTPBasicAuth(access_name, access_token)).json()
 
         if response.get('name', None) is None:
-            raise RuntimeError("Failed to access hdps/core branch")
+            raise RuntimeError("Failed to access ManiVaultStudio/core branch")
         return self._parse_core_commit_timestamp(response)
 
     @property

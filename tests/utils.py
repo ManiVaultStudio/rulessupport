@@ -29,7 +29,7 @@ class TestRepo:
             f.write(some_text)
 
     def create_feature_branch(self, feature_name):
-        """Add a branch according to the hdps feature naming convention.
+        """Add a branch according to the ManiVault feature naming convention.
         feature_name wil be preceeded by 'feature/' in the branch name
 
         Args:
@@ -40,7 +40,7 @@ class TestRepo:
         self._repo.git.commit('-a', message='Created feature branch')
 
     def create_core_release_branch(self, version):
-        """Add a branch according to the hdps release naming convention.
+        """Add a branch according to the ManiVault release naming convention.
         version wil be preceeded by 'release/' in the branch name
 
         Args:
@@ -51,7 +51,7 @@ class TestRepo:
         self._repo.git.commit('-a', message='Created release branch')
 
     def create_plugin_release_branch(self, version, core_version):
-        """Add a branch according to the hdps release naming convention.
+        """Add a branch according to the ManiVault release naming convention.
         The branch name will be of the form:
             'release/core_<core_version>/<version>'
 
@@ -64,7 +64,7 @@ class TestRepo:
         self._repo.git.commit('-a', message='Created plugin-release branch')
 
     def create_plugin_feature_core_release_branch(self, version, core_version):
-        """Add a branch according to the hdps
+        """Add a branch according to the ManiVault
         release naming convention.
         The branch name will be of the form:
             'release/core_<core_version>/<version>'
